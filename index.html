@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mata's Life Goals</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: #f5f7f3;
+color: #2c3828;
+min-height: 100vh;
+padding-bottom: 80px;
+}
+
+.header {
+background: #4a6741;
+padding: 48px 20px 24px;
+text-align: center;
+}
+.header h1 {
+font-family: ‘Cormorant Garamond’, serif;
+font-size: 28px;
+font-weight: 400;
+color: #f5f7f3;
+letter-spacing: 1px;
+}
+.header h1 em { color: #c8d9a0; font-style: italic; }
+.header-sub {
+font-size: 10px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: #a8bf90;
+margin-top: 4px;
+}
+.header-stats {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 16px;
+margin-top: 18px;
+background: rgba(255,255,255,0.1);
+border-radius: 12px;
+padding: 12px 20px;
+}
+.header-pct {
+font-family: ‘Cormorant Garamond’, serif;
+font-size: 36px;
+color: #f5f7f3;
+line-height: 1;
+}
+.header-stats-text { text-align: left; color: #c8d9a0; font-size: 12px; line-height: 1.5; }
+.header-stats-text strong { color: #f5f7f3; font-size: 14px; display: block; }
+
+.global-bar { height: 3px; background: rgba(255,255,255,0.15); }
+.global-bar-fill { height: 100%; background: #c8d9a0; transition: width 0.6s ease; }
+
+.nav {
+display: flex;
+overflow-x: auto;
+scrollbar-width: none;
+background: white;
+border-bottom: 1px solid #e4ebe2;
+position: sticky;
+top: 0;
+z-index: 100;
+box-shadow: 0 2px 8px rgba(74,103,65,0.08);
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+flex: 0 0 auto;
+padding: 12px 14px;
+font-size: 12px;
+font-family: ‘DM Sans’, sans-serif;
+font-weight: 400;
+color: #8aaa78;
+background: none;
+border: none;
+border-bottom: 2px solid transparent;
+cursor: pointer;
+white-space: nowrap;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+gap: 5px;
+}
+.nav-btn.active { color: #4a6741; border-bottom-color: #4a6741; font-weight: 500; }
+
+.area { display: none; }
+.area.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.area-top {
+padding: 20px 16px 16px;
+background: white;
+border-bottom: 1px solid #e4ebe2;
+}
+.area-title {
+font-family: ‘Cormorant Garamond’, serif;
+font-size: 24px;
+font-weight: 400;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.area-tagline {
+font-style: italic;
+font-family: ‘Cormorant Garamond’, serif;
+font-size: 15px;
+color: #7a9470;
+margin-top: 3px;
+}
+.area-bar { height: 4px; background: #e4ebe2; border-radius: 4px; overflow: hidden; margin-top: 12px; }
+.area-bar-fill { height: 100%; background: linear-gradient(90deg, #4a6741, #8aaa78); border-radius: 4px; transition: width 0.5s ease; }
+.area-bar-text { font-size: 11px; color: #8aaa78; margin-top: 4px; text-align: right; }
+
+.note {
+margin: 12px 16px 0;
+padding: 12px 14px;
+background: #eef2ea;
+border-left: 3px solid #8aaa78;
+border-radius: 0 8px 8px 0;
+}
+.note-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #6a8858; margin-bottom: 4px; }
+.note-text { font-family: ‘Cormorant Garamond’, serif; font-size: 15px; color: #3a5030; font-style: italic; line-height: 1.5; }
+
+.goals { padding: 12px 16px; }
+
+.goal { background: white; border-radius: 12px; margin-bottom: 10px; border: 1px solid #e4ebe2; overflow: hidden; }
+.goal-head { padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.goal-badge {
+width: 32px; height: 32px; border-radius: 50%;
+background: #eef2ea; color: #4a6741;
+font-family: ‘Cormorant Garamond’, serif; font-size: 13px;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+}
+.goal-badge.done { background: #4a6741; color: white; }
+.goal-info { flex: 1; min-width: 0; }
+.goal-title-text { font-size: 14px; font-weight: 500; line-height: 1.4; color: #2c3828; }
+.goal-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.goal-tag { background: #eef2ea; color: #5a7a4a; font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+.goal-count { font-size: 11px; color: #8aaa78; }
+.goal-arrow { color: #b8d0a8; font-size: 14px; transition: transform 0.25s; flex-shrink: 0; }
+.goal.open .goal-arrow { transform: rotate(180deg); }
+
+.milestones { display: none; border-top: 1px solid #f0f4ee; padding: 4px 0 8px; }
+.goal.open .milestones { display: block; }
+.milestones-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8aaa78; padding: 10px 14px 6px; }
+
+.ms {
+display: flex; align-items: flex-start; gap: 10px;
+padding: 9px 14px; cursor: pointer;
+border-bottom: 1px solid #f5f7f3;
+transition: background 0.15s;
+}
+.ms:last-child { border-bottom: none; }
+.ms:active { background: #f5f7f3; }
+
+.ms-check {
+width: 20px; height: 20px; border-radius: 50%;
+border: 1.5px solid #c8d9a0; flex-shrink: 0; margin-top: 1px;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s; background: white;
+}
+.ms.done .ms-check { background: #4a6741; border-color: #4a6741; }
+.ms.done .ms-check::after {
+content: ‘’;
+width: 5px; height: 9px;
+border: 2px solid white; border-top: none; border-left: none;
+transform: rotate(45deg) translateY(-1px); display: block;
+}
+.ms-text { font-size: 13px; color: #2c3828; line-height: 1.5; flex: 1; padding-top: 1px; }
+.ms.done .ms-text { color: #8aaa78; text-decoration: line-through; text-decoration-color: #c8d9a0; }
+
+.goal-done-banner { display: none; background: #4a6741; color: #c8d9a0; text-align: center; padding: 8px; font-size: 12px; letter-spacing: 1px; }
+.goal.all-done .goal-done-banner { display: block; }
+.goal.all-done .goal-badge { background: #4a6741; color: white; }
+
+.bottom-bar {
+position: fixed; bottom: 0; left: 0; right: 0;
+background: white; border-top: 1px solid #e4ebe2;
+padding: 10px 0; padding-bottom: max(10px, env(safe-area-inset-bottom));
+display: flex; z-index: 200;
+box-shadow: 0 -2px 12px rgba(74,103,65,0.08);
+}
+.bs { flex: 1; text-align: center; border-right: 1px solid #e4ebe2; }
+.bs:last-child { border-right: none; }
+.bs-num { font-family: ‘Cormorant Garamond’, serif; font-size: 20px; color: #4a6741; line-height: 1; }
+.bs-lbl { font-size: 9px; color: #8aaa78; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+.toast {
+position: fixed; top: 68px; left: 50%;
+transform: translateX(-50%) translateY(-10px);
+background: #2c3828; color: #c8d9a0;
+padding: 8px 18px; border-radius: 30px; font-size: 13px;
+opacity: 0; transition: all 0.25s; z-index: 999; pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <h1><em>Mata's</em> Life Goals</h1>
+  <div class="header-sub">Koło Życia · 2025–2026</div>
+  <div class="header-stats">
+    <div class="header-pct" id="mainPct">0%</div>
+    <div class="header-stats-text">
+      <strong id="mainCount">0 / 0</strong>
+      kroków ukończonych
+    </div>
+  </div>
+</div>
+<div class="global-bar"><div class="global-bar-fill" id="globalBar" style="width:0%"></div></div>
+
+<nav class="nav" id="nav"></nav>
+<main id="main"></main>
+
+<div class="bottom-bar">
+  <div class="bs"><div class="bs-num">8</div><div class="bs-lbl">Obszarów</div></div>
+  <div class="bs"><div class="bs-num" id="bs2">0</div><div class="bs-lbl">Celów</div></div>
+  <div class="bs"><div class="bs-num" id="bs3">0</div><div class="bs-lbl">Zrobione</div></div>
+  <div class="bs"><div class="bs-num" id="bs4">0</div><div class="bs-lbl">Pozostało</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [
+  { id:'rodzina', emoji:'👧', name:'Rodzina & Bliskość', tagline:'Czas który zostanie w sercu na zawsze',
+    note:'Będę tego żałować — ale nie muszę. Małe momenty codziennie budują to, co pamiętają dzieci.',
+    goals:[
+      { id:'r1', title:'Codziennie minimum 1 zadanie z appki Bliżej Córek', tag:'Nawyk codzienny',
+        ms:['Zainstalować / otworzyć appkę Bliżej Córek na iPhone','Zrobić pierwsze 7 zadań z rzędu (1 tydzień)','Osiągnąć 30 zadań (poziom 1)','Osiągnąć 60 zadań (poziom 2)','Osiągnąć 90 zadań (poziom 3)','Ukończyć wszystkie 150 zadań 🎉'] },
+      { id:'r2', title:'Aktywna obecność: 1h po przedszkolu + 2h w weekendy', tag:'Rytm tygodnia',
+        ms:['Spacer lub wyjście na dwór razem','Czytanie razem — każda córka wybiera książkę','Gotowanie lub pieczenie razem','Gry planszowe','Rysowanie, crafts, malowanie','Taniec lub muzyka w domu','Puzzle lub Lego','Rozmowy — pytać, słuchać, nie spieszyć się','Oglądanie filmu razem — telefon odłożony, jestem aktywnie z nimi','Przytulanie się — bez powodu, po prostu','Pozwolić im towarzyszyć mi w codziennych rzeczach — nie odpychać ich, gdy są przy mnie'] }
+    ]
+  },
+  { id:'praca', emoji:'💼', name:'Praca & Kariera', tagline:'Masz kompetencje lidera — czas na strukturę która to potwierdzi',
+    note:'Veeva ma zamknięty sufit. Czerwiec to punkt startowy — do tego czasu robisz świetną robotę i pozostajesz otwarta na sygnały.',
+    goals:[
+      { id:'p1', title:'Do czerwca: świetna robota + otwartość na rekruterów', tag:'Do czerwca 2025',
+        ms:['Dać z siebie 100% w bieżących projektach — być zauważalną','Odpowiadać na oferty rekruterów (filtr: tylko role managerskie)','Zapisać czego szukam w nowej roli (wartości, branża, struktura)','Dobić do roku w Veevie — czerwiec 2025 ✓'] },
+      { id:'p2', title:'Od czerwca: aktywne szukanie roli managerskiej', tag:'Od czerwca 2025',
+        ms:['Odświeżyć CV (PL i EN)','Zaktualizować LinkedIn — pod kątem leadership','Określić ile godzin/tydzień poświęcam na szukanie','Wysłać pierwsze 5 aplikacji na wybrane role','Zdobyć pierwszą rozmowę rekrutacyjną','Przyjąć ofertę z prawdziwym leadership 🎯'] }
+    ]
+  },
+  { id:'zdrowie', emoji:'💪', name:'Zdrowie & Ciało', tagline:'Energia do wszystkiego co ważne',
+    note:'Masz system w Daily Coach — celem jest go po prostu używać konsekwentnie.',
+    goals:[
+      { id:'z1', title:'Ukończyć wszystkie nagrody w Daily Coach', tag:'Daily Coach',
+        ms:['Zdobyć pierwszą nagrodę','Utrzymać streak 14 dni','Utrzymać streak 30 dni','Ukończyć 50% nagród','Ukończyć wszystkie nagrody 🏆'] },
+      { id:'z2', title:'Osiągnąć ~85 kg i zdrowy poziom tłuszczu', tag:'Cel wagowy',
+        ms:['Zrobić pomiar wyjściowy: waga + obwody','Ustalić plan żywieniowy (wegetariański, konkretny)','Osiągnąć -5 kg od punktu startowego','Osiągnąć -10 kg od punktu startowego','Dotrzeć do ~85 kg i utrzymać przez 4 tygodnie ✨'] }
+    ]
+  },
+  { id:'finanse', emoji:'💰', name:'Finanse', tagline:'Bezpieczeństwo finansowe to autonomia',
+    note:'Masz system — trzeba go stosować. Ten miesiąc na minusie to sygnał, nie wyrok.',
+    goals:[
+      { id:'f1', title:'Nie wychodzić ponad 2 000 zł/mies. na przyjemności', tag:'Nawyk miesięczny',
+        ms:['Zaktualizować kategorie w systemie budżetowym','Zamknąć pierwszy miesiąc bez przekroczenia limitu','Zamknąć 3 miesiące z rzędu w limicie','Zamknąć 6 miesięcy z rzędu w limicie 💚'] },
+      { id:'f2', title:'Zbudować 30 000 zł oszczędności (start: ~7 500)', tag:'Cel: 30 000 zł',
+        ms:['Osiągnąć 10 000 zł','Osiągnąć 15 000 zł','Osiągnąć 20 000 zł','Osiągnąć 25 000 zł','Osiągnąć 30 000 zł 🎉'] },
+      { id:'f3', title:'Spłacić samochód (pozostało 54 500 zł)', tag:'Dług: 54 500 zł',
+        ms:['Sprawdzić harmonogram spłat i datę końcową','Spłacić 25% (pozostało ~40 875 zł)','Spłacić 50% (pozostało ~27 250 zł)','Spłacić 75% (pozostało ~13 625 zł)','Samochód spłacony w 100% 🚗✓'] }
+    ]
+  },
+  { id:'rozwoj', emoji:'🌱', name:'Rozwój osobisty', tagline:'Stawać się lepszą wersją siebie — bez pośpiechu',
+    note:'Gotowość do terapii przyjdzie kiedy przyjdzie. Cel jest zapisany, żeby nie zniknął.',
+    goals:[
+      { id:'ro1', title:'Hiszpański — poziom A2 (Duolingo: z 40 do 59)', tag:'Duolingo · A2',
+        ms:['Osiągnąć poziom 45','Osiągnąć poziom 50 — półmetek 🎯','Osiągnąć poziom 55','Osiągnąć poziom 59 — A2 ukończone ¡Perfecto! 🇪🇸'] },
+      { id:'ro2', title:'Wrócić do terapii — temat lęku i relacji', tag:'Gdy gotowa',
+        ms:['Przyznać sobie że to jest cel (już zrobione ✓)','Znaleźć i sprawdzić 2–3 terapeutów','Umówić pierwszą konsultację','Pójść na pierwszą sesję','Ustalić regularny rytm sesji'] }
+    ]
+  },
+  { id:'kreatywnosc', emoji:'🎨', name:'Kreatywność & Projekty', tagline:'Rzeczy tylko dla siebie — bez presji wyniku',
+    note:'Pianino i książka mają tę samą energię: coś co jest Twoje, nie dla nikogo.',
+    goals:[
+      { id:'k1', title:'Simply Piano — ukończyć poziom Intermediate', tag:'Simply Piano',
+        ms:['Essentials III — ukończyć (jesteś na 45%) 🎹','Chord Styling I — ukończyć','Classical I — ukończyć','Pop Chords II — ukończyć','Lead Sheet I — ukończyć','Intermediate I — ukończyć','Intermediate II — ukończyć','Intermediate III — ukończyć','Intermediate IV — ukończyć ✨🏆'] },
+      { id:'k2', title:'Napisać swoją książkę — choćby do szuflady', tag:'Książka',
+        ms:['Zapisać o czym jest ta książka — 1 akapit','Napisać pierwszą scenę lub rozdział','Osiągnąć 25% materiału','Osiągnąć 50% materiału','Napisać ostatnią stronę 📖'] }
+    ]
+  },
+  { id:'dom', emoji:'🏡', name:'Dom & Przestrzeń', tagline:'Dom który czujesz zanim przekroczysz próg',
+    note:'Ciepłe drewno, kremowe tekstury, złote detale — masz już wizję. Teraz ją zrealizować.',
+    goals:[
+      { id:'d1', title:'Sprzedać obecny dom i kupić dom marzeń', tag:'Transakcja',
+        ms:['Dom wystawiony na sprzedaż z agentem ✓','Pierwsze oględziny z kupującymi','Oferta kupna przyjęta — umowa podpisana 🎉','Zdefiniować must-have nowego domu (lista kryteriów)','Zobaczyć min. 5 nieruchomości','Złożyć ofertę na wymarzony dom','Klucze w ręku — nowy dom nasz 🔑'] },
+      { id:'d2', title:'Urządzić dom zgodnie z wizją — ciepło, elegancja, rodzina', tag:'Aranżacja',
+        ms:['Stworzyć mood board dla każdego pomieszczenia','Ustalić budżet i priorytety pomieszczeń','Urządzić salon — przestrzeń wspólna gotowa','Urządzić sypialnię — spokój i komfort','Urządzić pokój dziewczynek — ich magiczna przestrzeń','Pierwszy wieczór z gośćmi w nowym domu 🍷'] }
+    ]
+  },
+  { id:'relacja', emoji:'💑', name:'Relacja z partnerem', tagline:'Codzienne małe gesty — i obserwować dokąd prowadzą',
+    note:'Nie musisz wiedzieć dokąd to zmierza. Wystarczy że robisz jedno działanie dziennie i pozostajesz uważna.',
+    goals:[
+      { id:'rel1', title:'Codziennie 1 działanie z appki Bliżej Siebie', tag:'Nawyk codzienny',
+        ms:['Otworzyć appkę Bliżej Siebie i zacząć','Zrobić 7 działań z rzędu — pierwszy tydzień','Zrobić 30 działań — pierwszy miesiąc','Po 30 dniach zatrzymać się: co się zmieniło?','Po 90 dniach — świadoma decyzja o kierunku relacji'] }
+    ]
+  }
+];
+
+const SK = 'mata_lg_v2';
+let S = (() => { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch(e) { return {}; } })();
+const save = () => { try { localStorage.setItem(SK, JSON.stringify(S)); } catch(e) {} };
+let activeArea = DATA[0].id;
+let openGoals = {};
+
+function msDone(gid, idx) {
+  const k = gid + '_' + idx;
+  S[k] = !S[k];
+  save();
+  render();
+  if (S[k]) showToast('✓ Krok ukończony!');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+function toggleGoal(id) { openGoals[id] = !openGoals[id]; render(); }
+function switchArea(id) { activeArea = id; render(); window.scrollTo(0,0); }
+
+function countArea(area) {
+  let total=0, done=0;
+  area.goals.forEach(g => g.ms.forEach((_,i) => { total++; if(S[g.id+'_'+i]) done++; }));
+  return {total,done};
+}
+function countAll() {
+  let total=0, done=0;
+  DATA.forEach(a => { const c=countArea(a); total+=c.total; done+=c.done; });
+  return {total,done};
+}
+
+function render() {
+  document.getElementById('nav').innerHTML = DATA.map(a =>
+    `<button class="nav-btn ${a.id===activeArea?'active':''}" onclick="switchArea('${a.id}')">
+      ${a.emoji} ${a.name.split(' ')[0]}
+    </button>`
+  ).join('');
+
+  document.getElementById('main').innerHTML = DATA.map(area => {
+    const {total,done} = countArea(area);
+    const pct = total ? Math.round(done/total*100) : 0;
+
+    const goalsHTML = area.goals.map(g => {
+      const gdone = g.ms.filter((_,i) => S[g.id+'_'+i]).length;
+      const allDone = gdone === g.ms.length;
+      const isOpen = openGoals[g.id];
+      const msHTML = g.ms.map((m,i) => {
+        const checked = S[g.id+'_'+i];
+        return `<div class="ms ${checked?'done':''}" onclick="msDone('${g.id}',${i})">
+          <div class="ms-check"></div>
+          <div class="ms-text">${m}</div>
+        </div>`;
+      }).join('');
+      return `<div class="goal ${isOpen?'open':''} ${allDone?'all-done':''}">
+        <div class="goal-done-banner">✨ Cel osiągnięty!</div>
+        <div class="goal-head" onclick="toggleGoal('${g.id}')">
+          <div class="goal-badge ${allDone?'done':''}">${allDone?'✓':gdone+'/'+g.ms.length}</div>
+          <div class="goal-info">
+            <div class="goal-title-text">${g.title}</div>
+            <div class="goal-meta">
+              <span class="goal-tag">${g.tag}</span>
+              <span class="goal-count">${gdone} z ${g.ms.length} kroków</span>
+            </div>
+          </div>
+          <div class="goal-arrow">▾</div>
+        </div>
+        <div class="milestones">
+          <div class="milestones-label">Kroki do celu</div>
+          ${msHTML}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="area ${area.id===activeArea?'active':''}" id="a-${area.id}">
+      <div class="area-top">
+        <div class="area-title">${area.emoji} ${area.name}</div>
+        <div class="area-tagline">${area.tagline}</div>
+        <div class="area-bar"><div class="area-bar-fill" style="width:${pct}%"></div></div>
+        <div class="area-bar-text">${done} / ${total} kroków · ${pct}%</div>
+      </div>
+      ${area.note ? `<div class="note"><div class="note-label">Przypomnienie</div><div class="note-text">${area.note}</div></div>` : ''}
+      <div class="goals">${goalsHTML}</div>
+    </div>`;
+  }).join('');
+
+  const {total,done} = countAll();
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('mainPct').textContent = pct+'%';
+  document.getElementById('mainCount').textContent = done+' / '+total;
+  document.getElementById('globalBar').style.width = pct+'%';
+  document.getElementById('bs2').textContent = DATA.reduce((s,a)=>s+a.goals.length,0);
+  document.getElementById('bs3').textContent = done;
+  document.getElementById('bs4').textContent = total-done;
+}
+
+render();
+</script>
+
+</body>
+</html>
