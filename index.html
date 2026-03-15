@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mata's Life Goals</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'DM Sans', sans-serif; background: #f5f7f3; color: #2c3828; min-height: 100vh; padding-bottom: 80px; }
+
+.header { background: #4a6741; padding: 48px 20px 22px; text-align: center; }
+.header h1 { font-family: ‘Cormorant Garamond’, serif; font-size: 28px; font-weight: 400; color: #f5f7f3; letter-spacing: 1px; }
+.header h1 em { color: #c8d9a0; font-style: italic; }
+.header-sub { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #a8bf90; margin-top: 4px; }
+.header-stats { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 16px; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 20px; }
+.header-pct { font-family: ‘Cormorant Garamond’, serif; font-size: 34px; color: #f5f7f3; line-height: 1; }
+.header-stats-text { text-align: left; color: #c8d9a0; font-size: 12px; line-height: 1.5; }
+.header-stats-text strong { color: #f5f7f3; font-size: 14px; display: block; }
+.global-bar { height: 3px; background: rgba(255,255,255,0.15); }
+.global-bar-fill { height: 100%; background: #c8d9a0; transition: width 0.6s ease; }
+
+.nav { display: flex; overflow-x: auto; scrollbar-width: none; background: white; border-bottom: 1px solid #e4ebe2; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(74,103,65,0.08); }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn { flex: 0 0 auto; padding: 11px 13px; font-size: 12px; font-family: ‘DM Sans’, sans-serif; font-weight: 400; color: #8aaa78; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+.nav-btn.active { color: #4a6741; border-bottom-color: #4a6741; font-weight: 500; }
+.nav-btn.priority { color: #4a6741; }
+.nav-btn.priority.active { background: #f0f5ee; }
+.nav-divider { width: 1px; background: #e4ebe2; margin: 8px 0; flex-shrink: 0; }
+
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* DASHBOARD */
+.dash { padding: 16px; }
+.dash-section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #6a8858; margin-bottom: 10px; margin-top: 4px; display: flex; align-items: center; gap: 8px; }
+.dash-section-title::after { content: ‘’; flex: 1; height: 1px; background: #e4ebe2; }
+
+.dash-card { background: white; border-radius: 12px; margin-bottom: 10px; border: 1px solid #e4ebe2; overflow: hidden; display: flex; align-items: stretch; }
+.dash-card.priority-card { border-left: 3px solid #4a6741; }
+.dash-card.radar-card { border-left: 3px solid #c8d9a0; }
+.dash-card-left { padding: 14px 12px 14px 14px; flex: 1; min-width: 0; }
+.dash-card-area { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #8aaa78; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.dash-card-area .priority-dot { width: 5px; height: 5px; border-radius: 50%; background: #4a6741; flex-shrink: 0; }
+.dash-card-step { font-size: 14px; color: #2c3828; line-height: 1.4; font-weight: 400; }
+.dash-card-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.dash-card-goal { font-size: 11px; color: #a8bf90; line-height: 1.3; }
+.dash-card-right { width: 56px; display: flex; align-items: center; justify-content: center; background: #f5f7f3; border-left: 1px solid #e4ebe2; flex-shrink: 0; cursor: pointer; transition: background 0.2s; }
+.dash-card-right:active { background: #e4ebe2; }
+.dash-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #c8d9a0; background: white; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.dash-check.done { background: #4a6741; border-color: #4a6741; }
+.dash-check.done::after { content: ‘’; width: 6px; height: 10px; border: 2px solid white; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); display: block; }
+.dash-all-done { background: white; border-radius: 12px; border: 1px solid #e4ebe2; padding: 16px; text-align: center; margin-bottom: 10px; border-left: 3px solid #4a6741; }
+.dash-all-done-text { font-size: 15px; color: #6a8858; font-family: ‘Cormorant Garamond’, serif; font-style: italic; }
+
+/* FREQ BADGE */
+.freq { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 20px; font-weight: 500; flex-shrink: 0; }
+.freq-codziennie { background: #e8f5e9; color: #2e7d32; }
+.freq-tygodniowo { background: #e3f2fd; color: #1565c0; }
+.freq-jednorazowo { background: #fafafa; color: #9e9e9e; border: 1px solid #e0e0e0; }
+
+/* AREA PAGE */
+.area-top { padding: 20px 16px 16px; background: white; border-bottom: 1px solid #e4ebe2; }
+.area-title { font-family: ‘Cormorant Garamond’, serif; font-size: 24px; font-weight: 400; display: flex; align-items: center; gap: 8px; }
+.area-tagline { font-style: italic; font-family: ‘Cormorant Garamond’, serif; font-size: 15px; color: #7a9470; margin-top: 3px; }
+.area-bar { height: 4px; background: #e4ebe2; border-radius: 4px; overflow: hidden; margin-top: 12px; }
+.area-bar-fill { height: 100%; background: linear-gradient(90deg, #4a6741, #8aaa78); border-radius: 4px; transition: width 0.5s ease; }
+.area-bar-text { font-size: 11px; color: #8aaa78; margin-top: 4px; text-align: right; }
+.note { margin: 12px 16px 0; padding: 12px 14px; background: #eef2ea; border-left: 3px solid #8aaa78; border-radius: 0 8px 8px 0; }
+.note-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #6a8858; margin-bottom: 4px; }
+.note-text { font-family: ‘Cormorant Garamond’, serif; font-size: 15px; color: #3a5030; font-style: italic; line-height: 1.5; }
+
+.goals { padding: 12px 16px; }
+.goal { background: white; border-radius: 12px; margin-bottom: 10px; border: 1px solid #e4ebe2; overflow: hidden; }
+.goal-head { padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.goal-badge { width: 32px; height: 32px; border-radius: 50%; background: #eef2ea; color: #4a6741; font-family: ‘Cormorant Garamond’, serif; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.goal-badge.done { background: #4a6741; color: white; }
+.goal-info { flex: 1; min-width: 0; }
+.goal-title-text { font-size: 14px; font-weight: 500; line-height: 1.4; color: #2c3828; }
+.goal-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.goal-tag { background: #eef2ea; color: #5a7a4a; font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+.goal-count { font-size: 11px; color: #8aaa78; }
+.goal-arrow { color: #b8d0a8; font-size: 14px; transition: transform 0.25s; flex-shrink: 0; }
+.goal.open .goal-arrow { transform: rotate(180deg); }
+.milestones { display: none; border-top: 1px solid #f0f4ee; padding: 4px 0 8px; }
+.goal.open .milestones { display: block; }
+.milestones-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8aaa78; padding: 10px 14px 6px; }
+.ms { display: flex; align-items: flex-start; gap: 10px; padding: 9px 14px; cursor: pointer; border-bottom: 1px solid #f5f7f3; transition: background 0.15s; }
+.ms:last-child { border-bottom: none; }
+.ms:active { background: #f5f7f3; }
+.ms-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #c8d9a0; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: white; }
+.ms.done .ms-check { background: #4a6741; border-color: #4a6741; }
+.ms.done .ms-check::after { content: ‘’; width: 5px; height: 9px; border: 2px solid white; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); display: block; }
+.ms-body { flex: 1; min-width: 0; }
+.ms-text { font-size: 13px; color: #2c3828; line-height: 1.5; }
+.ms.done .ms-text { color: #8aaa78; text-decoration: line-through; text-decoration-color: #c8d9a0; }
+.ms-freq { margin-top: 3px; }
+.goal-done-banner { display: none; background: #4a6741; color: #c8d9a0; text-align: center; padding: 8px; font-size: 12px; letter-spacing: 1px; }
+.goal.all-done .goal-done-banner { display: block; }
+.goal.all-done .goal-badge { background: #4a6741; color: white; }
+
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e4ebe2; padding: 10px 0; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; z-index: 200; box-shadow: 0 -2px 12px rgba(74,103,65,0.08); }
+.bs { flex: 1; text-align: center; border-right: 1px solid #e4ebe2; }
+.bs:last-child { border-right: none; }
+.bs-num { font-family: ‘Cormorant Garamond’, serif; font-size: 20px; color: #4a6741; line-height: 1; }
+.bs-lbl { font-size: 9px; color: #8aaa78; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+.toast { position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-10px); background: #2c3828; color: #c8d9a0; padding: 8px 18px; border-radius: 30px; font-size: 13px; opacity: 0; transition: all 0.25s; z-index: 999; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+</head>
+<body>
+<div class="header">
+  <h1><em>Mata's</em> Life Goals</h1>
+  <div class="header-sub">Koło Życia · 2025–2026</div>
+  <div class="header-stats">
+    <div class="header-pct" id="mainPct">0%</div>
+    <div class="header-stats-text"><strong id="mainCount">0 / 0</strong>kroków ukończonych</div>
+  </div>
+</div>
+<div class="global-bar"><div class="global-bar-fill" id="globalBar" style="width:0%"></div></div>
+<nav class="nav" id="nav"></nav>
+<main id="main"></main>
+<div class="bottom-bar">
+  <div class="bs"><div class="bs-num">8</div><div class="bs-lbl">Obszarów</div></div>
+  <div class="bs"><div class="bs-num" id="bs2">0</div><div class="bs-lbl">Celów</div></div>
+  <div class="bs"><div class="bs-num" id="bs3">0</div><div class="bs-lbl">Zrobione</div></div>
+  <div class="bs"><div class="bs-num" id="bs4">0</div><div class="bs-lbl">Pozostało</div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PRIORITY_IDS = ['rodzina','zdrowie','kreatywnosc','relacja'];
+const FREQ_LABELS = { codziennie: '↻ codziennie', tygodniowo: '↻ co tydzień', jednorazowo: '→ jednorazowo' };
+
+const DATA = [
+  { id:'rodzina', emoji:'👧', name:'Rodzina & Bliskość', tagline:'Czas który zostanie w sercu na zawsze',
+    note:'Będę tego żałować — ale nie muszę. Małe momenty codziennie budują to, co pamiętają dzieci. Inspiracje: spacer, czytanie, gotowanie, gry, rysowanie, taniec, puzzle, rozmowy, film razem, przytulanie, towarzyszenie mi w codziennych rzeczach.',
+    goals:[
+      { id:'r1', title:'Codziennie minimum 1 zadanie z appki Bliżej Córek', tag:'Nawyk codzienny', ms:[
+        {t:'Wykonać pierwszą rzecz z appki Bliżej Córek', f:'jednorazowo'},
+        {t:'Zrobić pierwsze 7 zadań z rzędu (1 tydzień)', f:'codziennie'},
+        {t:'Osiągnąć 30 zadań (poziom 1)', f:'codziennie'},
+        {t:'Osiągnąć 60 zadań (poziom 2)', f:'codziennie'},
+        {t:'Osiągnąć 90 zadań (poziom 3)', f:'codziennie'},
+        {t:'Ukończyć wszystkie 150 zadań 🎉', f:'codziennie'},
+      ]},
+      { id:'r2', title:'Aktywna obecność: 1h po przedszkolu + 2h w weekendy', tag:'Rytm tygodnia', ms:[
+        {t:'Ustalić rytuał: telefon odkładam gdy wracamy z przedszkola — 1h tylko my', f:'jednorazowo'},
+        {t:'Zrobić pierwszy sobotni blok 2h aktywnego czasu', f:'jednorazowo'},
+        {t:'Utrzymać rytm przez 2 tygodnie z rzędu', f:'tygodniowo'},
+        {t:'Utrzymać rytm przez 4 tygodnie z rzędu', f:'tygodniowo'},
+        {t:'Utrzymać rytm przez 3 miesiące z rzędu', f:'tygodniowo'},
+        {t:'Po 3 miesiącach zapytać córki: co pamiętają, czego chcą więcej 💛', f:'jednorazowo'},
+      ]}
+    ]},
+  { id:'zdrowie', emoji:'💪', name:'Zdrowie & Ciało', tagline:'Energia do wszystkiego co ważne',
+    note:'Masz system w Daily Coach — celem jest go po prostu używać konsekwentnie.',
+    goals:[
+      { id:'z1', title:'Ukończyć wszystkie nagrody w Daily Coach', tag:'Daily Coach', ms:[
+        {t:'Zdobyć pierwszą nagrodę', f:'jednorazowo'},
+        {t:'Utrzymać streak 14 dni', f:'codziennie'},
+        {t:'Utrzymać streak 30 dni', f:'codziennie'},
+        {t:'Ukończyć 50% nagród', f:'tygodniowo'},
+        {t:'Ukończyć wszystkie nagrody 🏆', f:'tygodniowo'},
+      ]},
+      { id:'z2', title:'Osiągnąć ~85 kg i zdrowy poziom tłuszczu', tag:'Cel wagowy', ms:[
+        {t:'Zrobić pomiar wyjściowy: waga + obwody', f:'jednorazowo'},
+        {t:'Ustalić plan żywieniowy (wegetariański, konkretny)', f:'jednorazowo'},
+        {t:'Osiągnąć -5 kg od punktu startowego', f:'tygodniowo'},
+        {t:'Osiągnąć -10 kg od punktu startowego', f:'tygodniowo'},
+        {t:'Dotrzeć do ~85 kg i utrzymać przez 4 tygodnie ✨', f:'tygodniowo'},
+      ]}
+    ]},
+  { id:'kreatywnosc', emoji:'🎨', name:'Kreatywność & Projekty', tagline:'Rzeczy tylko dla siebie — bez presji wyniku',
+    note:'Pianino i książka mają tę samą energię: coś co jest Twoje, nie dla nikogo.',
+    goals:[
+      { id:'k1', title:'Simply Piano — ukończyć poziom Intermediate', tag:'Simply Piano', ms:[
+        {t:'Essentials III — ukończyć (jesteś na 45%) 🎹', f:'codziennie'},
+        {t:'Chord Styling I — ukończyć', f:'codziennie'},
+        {t:'Classical I — ukończyć', f:'codziennie'},
+        {t:'Pop Chords II — ukończyć', f:'codziennie'},
+        {t:'Lead Sheet I — ukończyć', f:'codziennie'},
+        {t:'Intermediate I — ukończyć', f:'codziennie'},
+        {t:'Intermediate II — ukończyć', f:'codziennie'},
+        {t:'Intermediate III — ukończyć', f:'codziennie'},
+        {t:'Intermediate IV — ukończyć ✨🏆', f:'codziennie'},
+      ]},
+      { id:'k2', title:'Napisać swoją książkę — choćby do szuflady', tag:'Książka', ms:[
+        {t:'Zapisać o czym jest ta książka — 1 akapit', f:'jednorazowo'},
+        {t:'Napisać pierwszą scenę lub rozdział', f:'tygodniowo'},
+        {t:'Osiągnąć 25% materiału', f:'tygodniowo'},
+        {t:'Osiągnąć 50% materiału', f:'tygodniowo'},
+        {t:'Napisać ostatnią stronę 📖', f:'tygodniowo'},
+      ]}
+    ]},
+  { id:'relacja', emoji:'💑', name:'Relacja z partnerem', tagline:'Codzienne małe gesty — i obserwować dokąd prowadzą',
+    note:'Nie musisz wiedzieć dokąd to zmierza. Wystarczy że robisz jedno działanie dziennie i pozostajesz uważna.',
+    goals:[
+      { id:'rel1', title:'Codziennie 1 działanie z appki Bliżej Siebie', tag:'Nawyk codzienny', ms:[
+        {t:'Wykonać pierwszą rzecz z appki Bliżej Siebie', f:'jednorazowo'},
+        {t:'Zrobić 7 działań z rzędu — pierwszy tydzień', f:'codziennie'},
+        {t:'Zrobić 30 działań — pierwszy miesiąc', f:'codziennie'},
+        {t:'Po 30 dniach zatrzymać się: co się zmieniło?', f:'jednorazowo'},
+        {t:'Po 90 dniach — świadoma decyzja o kierunku relacji', f:'jednorazowo'},
+      ]}
+    ]},
+  { id:'praca', emoji:'💼', name:'Praca & Kariera', tagline:'Masz kompetencje lidera — czas na strukturę która to potwierdzi',
+    note:'Veeva ma zamknięty sufit. Czerwiec to punkt startowy — do tego czasu robisz świetną robotę i pozostajesz otwarta na sygnały.',
+    goals:[
+      { id:'p1', title:'Do czerwca: świetna robota + otwartość na rekruterów', tag:'Do czerwca 2025', ms:[
+        {t:'Dać z siebie 100% w bieżących projektach — być zauważalną', f:'codziennie'},
+        {t:'Odpowiadać na oferty rekruterów (filtr: tylko role managerskie)', f:'tygodniowo'},
+        {t:'Zapisać czego szukam w nowej roli (wartości, branża, struktura)', f:'jednorazowo'},
+        {t:'Dobić do roku w Veevie — czerwiec 2025 ✓', f:'jednorazowo'},
+      ]},
+      { id:'p2', title:'Od czerwca: aktywne szukanie roli managerskiej', tag:'Od czerwca 2025', ms:[
+        {t:'Odświeżyć CV (PL i EN)', f:'jednorazowo'},
+        {t:'Zaktualizować LinkedIn — pod kątem leadership', f:'jednorazowo'},
+        {t:'Określić ile godzin/tydzień poświęcam na szukanie', f:'jednorazowo'},
+        {t:'Wysłać pierwsze 5 aplikacji na wybrane role', f:'tygodniowo'},
+        {t:'Zdobyć pierwszą rozmowę rekrutacyjną', f:'jednorazowo'},
+        {t:'Przyjąć ofertę z prawdziwym leadership 🎯', f:'jednorazowo'},
+      ]}
+    ]},
+  { id:'finanse', emoji:'💰', name:'Finanse', tagline:'Bezpieczeństwo finansowe to autonomia',
+    note:'Masz system — trzeba go stosować. Ten miesiąc na minusie to sygnał, nie wyrok.',
+    goals:[
+      { id:'f1', title:'Nie wychodzić ponad 2 000 zł/mies. na przyjemności', tag:'Nawyk miesięczny', ms:[
+        {t:'Wypisać wszystkie stałe koszty miesięczne — zobaczyć ile realnie zostaje', f:'jednorazowo'},
+        {t:'Odjąć stałe przyjemności (512 zł/mies: Claude, taniec, Simply Piano, Duolingo, iCloud, Onet, Tok FM, Google Drive) — realny limit spontaniczny: ~372 zł/tydzień', f:'jednorazowo'},
+        {t:'Niedzielny check-in: czy nie wyszłam ponad 1/4 miesięcznego limitu?', f:'tygodniowo'},
+        {t:'Większe wydatki zostawiać na koniec miesiąca — sprawdzić czy starczy', f:'tygodniowo'},
+        {t:'Zamknąć pierwszy miesiąc bez przekroczenia limitu', f:'jednorazowo'},
+        {t:'Zamknąć 3 miesiące z rzędu w limicie 💚', f:'tygodniowo'},
+      ]},
+      { id:'f2', title:'Zbudować 30 000 zł oszczędności (start: ~7 500)', tag:'Cel: 30 000 zł', ms:[
+        {t:'Osiągnąć 10 000 zł', f:'tygodniowo'},
+        {t:'Osiągnąć 15 000 zł', f:'tygodniowo'},
+        {t:'Osiągnąć 20 000 zł', f:'tygodniowo'},
+        {t:'Osiągnąć 25 000 zł', f:'tygodniowo'},
+        {t:'Osiągnąć 30 000 zł 🎉', f:'tygodniowo'},
+      ]},
+      { id:'f3', title:'Spłacić samochód (pozostało 54 500 zł)', tag:'Dług: 54 500 zł', ms:[
+        {t:'Sprawdzić harmonogram spłat i datę końcową', f:'jednorazowo'},
+        {t:'Spłacić 25% (pozostało ~40 875 zł)', f:'tygodniowo'},
+        {t:'Spłacić 50% (pozostało ~27 250 zł)', f:'tygodniowo'},
+        {t:'Spłacić 75% (pozostało ~13 625 zł)', f:'tygodniowo'},
+        {t:'Samochód spłacony w 100% 🚗✓', f:'jednorazowo'},
+      ]}
+    ]},
+  { id:'rozwoj', emoji:'🌱', name:'Rozwój osobisty', tagline:'Stawać się lepszą wersją siebie — bez pośpiechu',
+    note:'Gotowość do terapii przyjdzie kiedy przyjdzie. Cel jest zapisany, żeby nie zniknął.',
+    goals:[
+      { id:'ro1', title:'Hiszpański — poziom A2 (Duolingo: z 40 do 59)', tag:'Duolingo · A2', ms:[
+        {t:'Osiągnąć poziom 45', f:'codziennie'},
+        {t:'Osiągnąć poziom 50 — półmetek 🎯', f:'codziennie'},
+        {t:'Osiągnąć poziom 55', f:'codziennie'},
+        {t:'Osiągnąć poziom 59 — A2 ukończone ¡Perfecto! 🇪🇸', f:'codziennie'},
+      ]},
+      { id:'ro2', title:'Wrócić do terapii — temat lęku i relacji', tag:'Gdy gotowa', ms:[
+        {t:'Przyznać sobie że to jest cel (już zrobione ✓)', f:'jednorazowo'},
+        {t:'Znaleźć i sprawdzić 2–3 terapeutów', f:'jednorazowo'},
+        {t:'Umówić pierwszą konsultację', f:'jednorazowo'},
+        {t:'Pójść na pierwszą sesję', f:'jednorazowo'},
+        {t:'Ustalić regularny rytm sesji', f:'jednorazowo'},
+      ]}
+    ]},
+  { id:'dom', emoji:'🏡', name:'Dom & Przestrzeń', tagline:'Dom który czujesz zanim przekroczysz próg',
+    note:'Ciepłe drewno, kremowe tekstury, złote detale — masz już wizję. Teraz ją zrealizować.',
+    goals:[
+      { id:'d1', title:'Sprzedać obecny dom i kupić dom marzeń', tag:'Transakcja', ms:[
+        {t:'Dom wystawiony na sprzedaż z agentem ✓', f:'jednorazowo'},
+        {t:'Pierwsze oględziny z kupującymi', f:'jednorazowo'},
+        {t:'Oferta kupna przyjęta — umowa podpisana 🎉', f:'jednorazowo'},
+        {t:'Zdefiniować must-have nowego domu (lista kryteriów)', f:'jednorazowo'},
+        {t:'Zobaczyć min. 5 nieruchomości', f:'tygodniowo'},
+        {t:'Złożyć ofertę na wymarzony dom', f:'jednorazowo'},
+        {t:'Klucze w ręku — nowy dom nasz 🔑', f:'jednorazowo'},
+      ]},
+      { id:'d2', title:'Urządzić dom zgodnie z wizją — ciepło, elegancja, rodzina', tag:'Aranżacja', ms:[
+        {t:'Stworzyć mood board dla każdego pomieszczenia', f:'jednorazowo'},
+        {t:'Ustalić budżet i priorytety pomieszczeń', f:'jednorazowo'},
+        {t:'Urządzić salon — przestrzeń wspólna gotowa', f:'jednorazowo'},
+        {t:'Urządzić sypialnię — spokój i komfort', f:'jednorazowo'},
+        {t:'Urządzić pokój dziewczynek — ich magiczna przestrzeń', f:'jednorazowo'},
+        {t:'Pierwszy wieczór z gośćmi w nowym domu 🍷', f:'jednorazowo'},
+      ]}
+    ]}
+];
+
+const SK = 'mata_lg_v4';
+let S = (() => { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch(e) { return {}; } })();
+const save = () => { try { localStorage.setItem(SK, JSON.stringify(S)); } catch(e) {} };
+let activePage = 'dashboard';
+let openGoals = {};
+
+function getNextStep(area) {
+  for (const g of area.goals)
+    for (let i = 0; i < g.ms.length; i++)
+      if (!S[g.id+'_'+i]) return { gid:g.id, idx:i, ms:g.ms[i], goalTitle:g.title };
+  return null;
+}
+
+function msDone(gid, idx) {
+  const k = gid+'_'+idx; S[k] = !S[k]; save(); render();
+  if (S[k]) showToast('✓ Krok ukończony!');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+function toggleGoal(id) { openGoals[id] = !openGoals[id]; render(); }
+function switchPage(id) { activePage = id; render(); window.scrollTo(0,0); }
+
+function countArea(area) {
+  let total=0, done=0;
+  area.goals.forEach(g => g.ms.forEach((_,i) => { total++; if(S[g.id+'_'+i]) done++; }));
+  return {total,done};
+}
+function countAll() {
+  let total=0, done=0;
+  DATA.forEach(a => { const c=countArea(a); total+=c.total; done+=c.done; });
+  return {total,done};
+}
+
+function freqBadge(f) {
+  return `<span class="freq freq-${f}">${FREQ_LABELS[f]}</span>`;
+}
+
+function renderDashboard() {
+  const pAreas = DATA.filter(a => PRIORITY_IDS.includes(a.id));
+  const rAreas = DATA.filter(a => !PRIORITY_IDS.includes(a.id));
+
+  function cardHTML(area, isPriority) {
+    const next = getNextStep(area);
+    if (!next) return `<div class="dash-all-done ${isPriority?'priority-card':'radar-card'}">
+      <div class="dash-all-done-text">${area.emoji} ${area.name} — wszystkie kroki ukończone! 🎉</div></div>`;
+    const checked = S[next.gid+'_'+next.idx];
+    return `<div class="dash-card ${isPriority?'priority-card':'radar-card'}">
+      <div class="dash-card-left">
+        <div class="dash-card-area">${isPriority?'<span class="priority-dot"></span>':''}${area.emoji} ${area.name}</div>
+        <div class="dash-card-step">${next.ms.t}</div>
+        <div class="dash-card-meta">${freqBadge(next.ms.f)}<span class="dash-card-goal">${next.goalTitle}</span></div>
+      </div>
+      <div class="dash-card-right" onclick="msDone('${next.gid}',${next.idx})">
+        <div class="dash-check ${checked?'done':''}"></div>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="dash">
+    <div class="dash-section-title">🎯 Priorytety teraz</div>
+    ${pAreas.map(a => cardHTML(a,true)).join('')}
+    <div class="dash-section-title" style="margin-top:18px">📋 Na radarze</div>
+    ${rAreas.map(a => cardHTML(a,false)).join('')}
+  </div>`;
+}
+
+function render() {
+  const pages = [{id:'dashboard', emoji:'🏠', name:'Dziś'}, ...DATA];
+  document.getElementById('nav').innerHTML = pages.map((p,i) => {
+    const isPriority = p.id !== 'dashboard' && PRIORITY_IDS.includes(p.id);
+    const label = p.id === 'dashboard' ? 'Dziś' : p.name.split(' ')[0];
+    const divider = i === 5 ? '<div class="nav-divider"></div>' : '';
+    return divider + `<button class="nav-btn ${isPriority?'priority':''} ${p.id===activePage?'active':''}" onclick="switchPage('${p.id}')">${p.emoji} ${label}</button>`;
+  }).join('');
+
+  let html = `<div class="page ${activePage==='dashboard'?'active':''}" id="page-dashboard">${renderDashboard()}</div>`;
+
+  DATA.forEach(area => {
+    const {total,done} = countArea(area);
+    const pct = total ? Math.round(done/total*100) : 0;
+    const goalsHTML = area.goals.map(g => {
+      const gdone = g.ms.filter((_,i) => S[g.id+'_'+i]).length;
+      const allDone = gdone === g.ms.length;
+      const isOpen = openGoals[g.id];
+      const msHTML = g.ms.map((m,i) => {
+        const checked = S[g.id+'_'+i];
+        return `<div class="ms ${checked?'done':''}" onclick="msDone('${g.id}',${i})">
+          <div class="ms-check"></div>
+          <div class="ms-body">
+            <div class="ms-text">${m.t}</div>
+            <div class="ms-freq">${freqBadge(m.f)}</div>
+          </div>
+        </div>`;
+      }).join('');
+      return `<div class="goal ${isOpen?'open':''} ${allDone?'all-done':''}">
+        <div class="goal-done-banner">✨ Cel osiągnięty!</div>
+        <div class="goal-head" onclick="toggleGoal('${g.id}')">
+          <div class="goal-badge ${allDone?'done':''}">${allDone?'✓':gdone+'/'+g.ms.length}</div>
+          <div class="goal-info">
+            <div class="goal-title-text">${g.title}</div>
+            <div class="goal-meta"><span class="goal-tag">${g.tag}</span><span class="goal-count">${gdone} z ${g.ms.length} kroków</span></div>
+          </div>
+          <div class="goal-arrow">▾</div>
+        </div>
+        <div class="milestones"><div class="milestones-label">Kroki do celu</div>${msHTML}</div>
+      </div>`;
+    }).join('');
+    html += `<div class="page ${area.id===activePage?'active':''}" id="page-${area.id}">
+      <div class="area-top">
+        <div class="area-title">${area.emoji} ${area.name}</div>
+        <div class="area-tagline">${area.tagline}</div>
+        <div class="area-bar"><div class="area-bar-fill" style="width:${pct}%"></div></div>
+        <div class="area-bar-text">${done} / ${total} kroków · ${pct}%</div>
+      </div>
+      ${area.note?`<div class="note"><div class="note-label">Przypomnienie</div><div class="note-text">${area.note}</div></div>`:''}
+      <div class="goals">${goalsHTML}</div>
+    </div>`;
+  });
+
+  document.getElementById('main').innerHTML = html;
+  const {total,done} = countAll();
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('mainPct').textContent = pct+'%';
+  document.getElementById('mainCount').textContent = done+' / '+total;
+  document.getElementById('globalBar').style.width = pct+'%';
+  document.getElementById('bs2').textContent = DATA.reduce((s,a)=>s+a.goals.length,0);
+  document.getElementById('bs3').textContent = done;
+  document.getElementById('bs4').textContent = total-done;
+}
+
+render();
+</script>
+
+</body>
+</html>
